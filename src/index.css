@@ -1,0 +1,62 @@
+.kokoSivu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: whitesmoke;
+  margin: 0px;
+  height: 100vh;
+  width: 100vw;
+  padding: 0px;
+}
+
+.Person {
+  border-bottom: 1px solid grey;
+  padding: 1em;
+  margin: 0px;
+  width: 60%;
+  display: flex;
+}
+
+.personButton {
+  color: rgb(240, 76, 76);
+}
+
+.error {
+   color: red;
+   background: whitesmoke;
+   font-size: 20px;
+   border-style: solid;
+   border-radius: 5px;
+   padding: 10px;
+   margin-bottom: 10px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+ }
+
+ .success {
+   color: green;
+   background: whitesmoke;
+   font-size: 20px;
+   border-style: solid;
+   border-radius: 5px;
+   padding: 10px;
+   margin-bottom: 10px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+ }
+
+ .Blog {
+  padding-top: 10px;
+  padding-left: 2px;
+  border: 1px solid grey;
+  border-width: 1px;
+  margin-bottom: 5px;
+ }
+
+ p {
+   margin: 0px;
+   padding: 0px;
+ }
