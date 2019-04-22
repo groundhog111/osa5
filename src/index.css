@@ -22,7 +22,7 @@
   color: rgb(240, 76, 76);
 }
 
-.error {
+.ERROR{
    color: red;
    background: whitesmoke;
    font-size: 20px;
@@ -35,7 +35,7 @@
    justify-content: center;
  }
 
- .success {
+ .SUCCESS {
    color: green;
    background: whitesmoke;
    font-size: 20px;

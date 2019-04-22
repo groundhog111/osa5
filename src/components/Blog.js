@@ -10,7 +10,9 @@ const Blog = ({ blog, blogServicePut, refreshBlogs, deleteBlog, user }) => {
   const handleLike = async () => {
     try {
       await blogServicePut(blog)
-    } catch { console.log("blogServicePut ei täyttänyt promisea") }
+    } catch {
+      console.log("blogServicePut ei täyttänyt promisea") 
+    }
     
     refreshBlogs()
   }

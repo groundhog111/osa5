@@ -1,8 +1,12 @@
 import React, { useState } from "react"
 import blogService from '../services/blogs'
-import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { setNotification } from '../reducers/notificationReducer'
 
-const CreateBlog = ({ refreshBlogs, setSuccessMessage, blogFormRef }) => {
+const CreateBlog = (props) => {
+  const refreshBlogs = props.refreshBlogs
+  const blogFormRef = props.blogFormRef
+
   const [author, setAuthor] = useState("")
   const [title, setTitle] = useState("")
   const [url, setUrl] = useState("")
@@ -27,11 +31,7 @@ const CreateBlog = ({ refreshBlogs, setSuccessMessage, blogFormRef }) => {
     setUrl("")
     blogFormRef.current.toggleVisibility()
     await refreshBlogs()
-    setSuccessMessage('Luotu uusi blogi onnistuneesti')
-    setTimeout(() => {
-      setSuccessMessage(null)
-    }, 5000)
-    // ^antaa responseksi palvelimen responsen
+    props.setNotification("uusi blogi luotiin onnistuneesti","SUCCESS", 3)
   }
 
   return (
@@ -70,8 +70,18 @@ const CreateBlog = ({ refreshBlogs, setSuccessMessage, blogFormRef }) => {
   )
 }
 
-CreateBlog.propTypes = {
-  setSuccessMessage: PropTypes.func.isRequired
+
+const mapStateToProps = (state) => {
+  return state
 }
 
-export default CreateBlog
+const mapDispatchToProps = {
+  setNotification
+}
+
+const ConnectedCreateBlog = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CreateBlog)
+
+export default ConnectedCreateBlog

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import blogService from './services/blogs'
-import loginService from './services/login'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import CreateBlog from './components/CreateBlog'
@@ -9,80 +8,64 @@ import Togglable from './components/Togglable'
 import { useField } from './hooks/index'
 import './index.css'
 
-const App = () => {
-  const [blogs, setBlogs] = useState([])
-  // const [username, setUsername] = useState('')
+import { connect } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
+import { setBlogs } from './reducers/blogReducer'
+import { login, logout, alreadyLogedIn } from './reducers/userReducer'
+
+const App = (props) => {
   const username = useField('text')
   const password = useField('password')
-  // const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
-
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
+    props.setBlogs()
   }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
+    props.alreadyLogedIn()
   }, [])
+
+  const refreshBlogs = () => {
+    props.setBlogs()
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login(username.value, password.value)
-      window.localStorage.setItem(
-        'loggedNoteappUser', JSON.stringify(user)
-      )
-      blogService.setToken(user.token)
-      setUser(user)
+      await props.login(username.value, password.value)
       username.reset()
       password.reset()
-    } catch (exception) {
+    }
+    catch (exception) {
+      console.log('exception', exception)
       username.reset()
       password.reset()
-      setErrorMessage('käyttäjätunnus tai salasana virheellinen')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      props.setNotification("Käyttäjä tai salasana väärä", "ERROR", 2)
     }
   }
 
-  const refreshBlogs = () => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
-  }
 
   const blogsMap = () => (
     <div>
       <h2>blogs</h2>
-      <p>{user.username} logged in</p>
+      <p>{props.user.username} logged in</p>
       <button
         onClick={() => {
-          setUser(null)
+          props.logout()
           window.localStorage.removeItem("loggedNoteappUser")
           blogService.clearToken()
         }}
       >
         logout
       </button>
-      {blogs.sort((a, b) => (a.likes < b.likes) ? 1 : -1).map(blog => (
+      {props.blogs.sort((a, b) => (a.likes < b.likes) ? 1 : -1).map(blog => (
         <Blog
           blogServicePut={() => blogService.put(blog)}
           key={blog.id}
           blog={blog}
           refreshBlogs={refreshBlogs}
           deleteBlog={() => blogService.deleteBlog(blog)}
-          user = {user}
+          user = {props.user}
         />
       ))}
     </div>
@@ -90,12 +73,11 @@ const App = () => {
 
   const blogFormRef = React.createRef()
 
-  const loggedIn = () => (
-    <div>
+  const loggedIn = () => {
+    return <div>
       {
         <Togglable buttonLabel = "Create Blog" ref = {blogFormRef}>
           <CreateBlog
-            setSuccessMessage={message => setSuccessMessage(message)}
             refreshBlogs={refreshBlogs}
             blogFormRef={blogFormRef}
           />
@@ -103,13 +85,12 @@ const App = () => {
       }
       {blogsMap()}
     </div>
-  )
+  }
 
   return (
     <div>
-      <Notification message={successMessage} className="success" />
-      <Notification message={errorMessage} className="error" />
-      {user === null ? (
+      <Notification />
+      {props.user === null ? (
         <LoginForm
           handleLogin={(event) => handleLogin(event)}
           password={password}
@@ -122,4 +103,22 @@ const App = () => {
   )
 }
 
-export default App
+const mapStateToProps = (state) => {
+  return state
+}
+
+const mapDispatchToProps = {
+  setNotification,
+  setBlogs,
+  login,
+  logout,
+  alreadyLogedIn
+}
+
+const ConnectedApp = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App)
+
+export default ConnectedApp
+
