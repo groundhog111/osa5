@@ -19,8 +19,8 @@ import {
 } from 'react-router-dom'
 
 const App = (props) => {
-  const username = useField('text')
-  const password = useField('password')
+  const { reset: resetUsername, username } = useField('text')
+  const { reset: resetPassword, password } = useField('password')
 
   useEffect(() => {
     props.setBlogs()
@@ -38,8 +38,8 @@ const App = (props) => {
     event.preventDefault()
     try {
       await props.login(username.value, password.value)
-      username.reset()
-      password.reset()
+      resetUsername()
+      resetPassword()
     }
     catch (exception) {
       console.log('exception', exception)
